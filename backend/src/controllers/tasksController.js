@@ -1,13 +1,20 @@
-const tasksModel = require('../models/tasksModel')
+const tasksModel = require('../models/tasksModel');
 
-const getAll = async (request, response) => {
-
-    response.status(200).json({ mesagen: 'Bem vindo' })
-    // const tasks = await tasksModel.getAll();
-
-    return response.status(200).json([tasks])
+const getAll = async (_request, response) => {
+    const tasks = await tasksModel.getAll();
+    return response.status(200).json(tasks);
+};
+const createTask = async (request, response) => {
+    const createdTask = await tasksModel.createTask(request.body);
+    return response.status(201).json(createdTask);
 };
 
+const deleteTask = async (request, response) => {
+    const deleteTask = await tasksModel.deleteTask();
+
+}
+
 module.exports = {
-    getAll
+    getAll,
+    createTask,
 };
