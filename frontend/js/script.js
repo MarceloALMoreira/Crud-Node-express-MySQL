@@ -1,9 +1,26 @@
 const tdoby = document.querySelector('tbody');
 
+const addForm = document.querySelector('.add-form')
+
+const inputTask = document.querySelector('.input-task')
+
 const featchTasks = async () => {
     const response = await fetch('http://localhost:3000/tasks');
     const tasks = await response.json();
     return tasks
+}
+
+const addTask = async (event) => {
+    event.preventDefault();
+
+    const task = { title: inputTask.value };
+
+    await fetch('http://localhost:3000/tasks', {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(task),
+    });
+    loadTasks()
 }
 
 const createElement = (tag, innerText = '', innerHTML = '') => {
@@ -20,28 +37,24 @@ const createElement = (tag, innerText = '', innerHTML = '') => {
     return element
 }
 
-const createSelect = () => {
+const createSelect = (value) => {
     const options = `
     <option value="pendente">Pendente</option>
     <option value="em andamento">Em andamento</option>
     <option value="concluido">Concluida</option>
-    `
-    const select = createElement('select', '', options)
-    return select
-}
+    `;
+    const select = createElement('select', '', options);
 
-const task = {
-    id: 1,
-    title: 'Criado o Crud',
-    created_at: '00 janeiro de 2023: 00:12',
-    status: 'pendente'
+    select.value = value;
+
+    return select;
 }
 
 const creatRow = (task) => {
-    const { id, title, status, created_at } = task;
+    const { id, title, created_at, status } = task;
     const tr = createElement('tr');
     const tdTitle = createElement('td', title);
-    const tdCreateAt = createElement('td'.created_at);
+    const tdCreateAt = createElement('td', created_at);
     const tdStatus = createElement('td');
     const tActions = createElement('td');
 
@@ -65,7 +78,18 @@ const creatRow = (task) => {
     tr.appendChild(tdStatus);
     tr.appendChild(tActions)
 
-    tdoby.appendChild(tr);
+    return tr;
+
 }
 
-creatRow(task)
+const loadTasks = async () => {
+    const tasks = await featchTasks();
+    tasks.forEach((task) => {
+        const tr = creatRow(task);
+        tdoby.appendChild(tr);
+    });
+}
+
+addForm.addEventListener('submit', addTask)
+
+loadTasks();
